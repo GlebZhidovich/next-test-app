@@ -6,6 +6,6 @@ const buildEslintCommand = (filenames) =>
     .join(' --file ')}`;
 
 module.exports = {
-  '*.{ts,tsx}': ['tsc --noEmit', buildEslintCommand, 'prettier --check'],
+  '*.{ts,tsx}': [() => 'tsc --noEmit', buildEslintCommand, 'prettier --check'],
   '*.css': ['stylelint', 'prettier --check'],
 };
