@@ -1,29 +1,23 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { createUserSchema, User } from '@/entities/user/model/schema';
-import { Input } from '@/shared/ui/input';
-import { Button } from '@/shared/ui/button';
 import { usersRepository } from '@/entities/user/model/users.repository';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useFormAdapter } from '../modal/useFormAdapter';
 
 export function CreateUserForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  const { registerField, handleSubmit, getErrorMessage } = useFormAdapter({
     resolver: zodResolver(createUserSchema),
   });
 
   function renderFormError(fieldName: keyof User) {
+    const message = getErrorMessage(fieldName);
+
     return (
-      errors[fieldName] && (
-        <span className='text-xs text-red-500 italic'>
-          {errors[fieldName].message}
-        </span>
-      )
+      message && <span className='text-xs text-red-500 italic'>{message}</span>
     );
   }
 
@@ -33,15 +27,13 @@ export function CreateUserForm() {
       onSubmit={handleSubmit(usersRepository.addUser)}
     >
       <Label htmlFor='name'>User Name:</Label>
-      <Input id='name' placeholder='Name' {...register('name')} />
+      {registerField('name', <Input id='name' placeholder='Name' />)}
       {renderFormError('name')}
       <Label htmlFor='email'>User Email:</Label>
-      <Input
-        id='email'
-        placeholder='Email'
-        type='email'
-        {...register('email')}
-      />
+      {registerField(
+        'email',
+        <Input id='email' placeholder='Email' type='email' />,
+      )}
       {renderFormError('email')}
       <Button>Submit</Button>
     </form>
